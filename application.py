@@ -164,4 +164,4 @@ def upvote_comment():
 	return redirect(url_for("thread"), 303)
 
 if __name__=='__main__':
-	app.run()
+	app.run(host='0.0.0.0',port=80)
