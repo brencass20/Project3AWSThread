@@ -1,0 +1,57 @@
+<html>
+	<head>
+		<title> Brendan and Corey Threads - Project 3</title>
+	</head>
+	
+	<body>
+		<h2> Brendan and Corey Threads - Project 3</h2>
+		<p><font size="+1"><b>This is a simple feed that allows users to post threads, 
+			comment on these threads, and like those threads they like the most.  
+			Those with the most likes will be ordered to the top of the thread.
+		
+			<p>
+				<a href="{{ url_for("create_thread") }}">
+				<button type=submit>Create New Thread</button>
+				</a>
+			</p>
+						
+			<p>
+				<font size="+1"><b> POSTS </b></font>
+				<br><table border = 1>
+					<tr> 
+						<td><b>Likes</b></td>
+						<td><b>Message</b></td>
+						<td><b>Author</b></td>
+						<td><b>Comment</b></td>
+						<td><b>Upvote</b></td> 
+					</tr>
+					{% for thing in list %}
+						<td>{{ thing.likes }}</td> 
+						<td>{{ thing.message }}</td>
+						<td>{{ thing.author }}
+						<td><form action="{{ url_for("create_comment") }}" method="post"><button name="id", type=submit, value={{thing.id}}>Comment</button></form></td>
+						<td><form action="{{ url_for("upvote_thread") }}" method="post"><button name="id", type=submit, value={{thing.id}}>Upvote</button></form></td>
+					
+					{% endfor %}
+                </tr>
+				</table>
+			<script src="//ajax.googleapis.com/ajax/libs/1.9.1/jquery.min.js"></script>
+			<script type=text/javascript>
+				$(function() {
+					$('a#test').bind('click', function() {
+						$.getJSON('/upvote_thread',
+							function(data) {
+								//do nothing
+						});
+							return false;
+					});
+				});
+			</script>
+			<div class='contianer'>
+				<form>
+					<a href=# id=test><button class='btn btn-default'>Test</button></a>
+				</form>
+			</div>
+		</b></font></p>
+	</body>
+</html>

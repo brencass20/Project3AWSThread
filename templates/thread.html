@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>	Thread </title>
+		
+		<body>
+			<h2> The Thread details are below. </h2>
+			<p><font size="+1"><b> {{ msg }}</b></p>
+			
+			<p>
+				<font size="+1"><b> POSTS </b></font>
+				<br><table border = 1>
+					<tr> 
+						<td><b>Likes</b></td>
+						<td><b>Message</b></td>
+						<td><b>Author</b></td>
+						<td><b>Upvote</b></td> 
+					</tr>
+					<tr> 
+						{% for thing in list %}
+							<td>{{ thing.likes }}</td> <td>{{ thing.comment }}</td> <td>{{ thing.author }}<td><form action="{{ url_for("upvote_comment") }}" method="get"><button name="id", type=submit, value={{thing.commentid}}>Upvote</button></form></td>
+						{% endfor %}
+					</tr>
+                </tr>
+				</table>
+			</p>
+			
+			<p>
+				<form action="{{ url_for("create_comment") }}" method="post"><button name="id", type=submit, value={{threadid}}>Comment</button></form>
+			</p>
+
+			<p>
+				<a href="{{ url_for("index") }}">
+				<button type=submit>Go To Homepage</button>
+				</a>
+			</p>	
+	</head>

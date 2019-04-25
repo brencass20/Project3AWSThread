@@ -1,0 +1,15 @@
+<html>
+	<body>
+		<h2>New Comment Form</h2>
+		<form action="{{ url_for("thread") }}" method="POST">
+			User name:<br>
+			<input type="text" name="userName" value="commentName"><br>
+			Comment to be made:<br>
+			<input type="text" name="postString" value="add your comment here"><br><br>
+			ID:(Do not edit!) <br>
+			<input type="text" name="id" value={{threadid}}><br><br>
+			<input type="submit" value="Create Comment">
+		</form>
+		<p>If you click the "Create" button, the comment will be added to our webpage.</p>
+	</body>
+</html>
