@@ -1,14 +1,16 @@
 <html>
 	<body>
 		<h2>New Thread Form</h2>
-		<form action="{{ url_for("index") }}" method="POST">
+		<form action="{{ url_for("index") }}" enctype=multipart/form-data  method="POST">
 			User name:<br>
 			<input type="text" name="userName" value="addName"><br>
 			Post to be made:<br>
 			<input type="text" name="postString" value="add your thread here"><br>	
-			<input type="submit" value="Create Thread">
+			<input type=file name=myfile>
+			<input type="submit" value="Submit">
 		</form>
 	
-		<p>If you click the "Create" button, the thread will be added to our webpage.</p>
+		<h4>Add a image by choosing the file you want to add</h4>
+		<p>If you click the "Submit" button, the thread will be added to our webpage.</p>
 	</body>
 </html>

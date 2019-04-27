@@ -8,8 +8,11 @@ import json
 import random
 import requests
 import time
+import os
+import boto3
 from flask import Flask, request, render_template, url_for, redirect, make_response, g
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = os.path.join('static')
 
 globalThreadId=0
 
@@ -37,9 +40,20 @@ def execute_sql_select(database, sql):
 	database.close()
 	return allSelects
 
+def download(threadid):
+	localfilename=str(threadid)+'.jpg'
+	s3 = boto3.resource('s3')
+	bucket = s3.Bucket('coreyschooltest')
+	object = bucket.Object(localfilename)
+	with open('./static/'+localfilename, 'wb') as f:
+		object.download_fileobj(f)
+	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], localfilename)
+	return full_filename
 	
+
 @app.route('/', methods=['GET','POST'])
 def index():
+	print(request.form)
 	if "userName" in request.form.keys():
 		#Create the form before loading the page
 		userName = request.form["userName"]
@@ -48,7 +62,16 @@ def index():
 		sql = """INSERT INTO threads (threadId, threadContent, threadAuthor, threadLikes) VALUES (%s,%s, %s, %s)""" 
 		val = (id, postString, userName, "0")
 		execute_sql_insert(get_db(), sql,val)
-		
+		print(request.files)
+		#If the form value 'myfile' is not '' we need to save.
+		if request.files['myfile'] != '':
+			print("hereeeee")
+			body = request.files['myfile']
+			print("Made it past file req")
+			nameFile = str(id) + '.jpg'
+			s3 = boto3.resource('s3')
+			s3.Bucket('coreyschooltest').put_object(Key=nameFile, Body=body)
+	
 	sql = """SELECT * FROM threads WHERE threadId IS NOT NULL;"""
 	sqlTot = execute_sql_select(get_db(),sql)
 	totList = []
@@ -107,6 +130,9 @@ def thread():
 	sql = """ SELECT threadContent FROM threads WHERE threadId=%s;""" % (threadid)
 	sqlMessage=execute_sql_select(get_db(),sql)
 	sqlMessage=sqlMessage[0][0]
+
+	#Download an image for the thread!
+	imagename = download(threadid)
 	''' TESTING LOCALLY:
 	totList=[]
 	likes=1
@@ -116,7 +142,7 @@ def thread():
 	commentid=1
 	lineString={"threadid":id,"likes":likes,"author":author,"comment":comment,"commentid":commentid}
 	totList.append(lineString)'''
-	return render_template("thread.html",msg=sqlMessage,listcomment=totList,threadid=threadid)
+	return render_template("thread.html",msg=sqlMessage,listcomment=totList,threadid=threadid,user_image=imagename)
 
 @app.route("/createthread", methods=['GET','POST'])
 def create_thread():
