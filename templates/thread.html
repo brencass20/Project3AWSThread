@@ -16,8 +16,9 @@
 						<td><b>Upvote</b></td> 
 					</tr>
 					<tr> 
-						{% for thing in list %}
-							<td>{{ thing.likes }}</td> <td>{{ thing.comment }}</td> <td>{{ thing.author }}<td><form action="{{ url_for("upvote_comment") }}" method="get"><button name="id", type=submit, value={{thing.commentid}}>Upvote</button></form></td>
+						{% for thing in listcomment %}
+							<td>{{ thing.likes }}</td> <td>{{ thing.comment }}</td> <td>{{ thing.author }}<td><form action="{{ url_for("upvote_comment") }}" method="post"><button name="id", type=submit, value="{{thing.commentid}},{{threadid}}">Upvote</button></form></td>
+					</tr>
 						{% endfor %}
 					</tr>
                 </tr>
