@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 """e Flask and then add images to a database.
 """
-
+import botocore
 import MySQLdb
 import private_no_share_dangerous_passwords as pnsdp
 import json
@@ -42,18 +42,24 @@ def execute_sql_select(database, sql):
 
 def download(threadid):
 	localfilename=str(threadid)+'.jpg'
-	s3 = boto3.resource('s3')
+	s3 = boto3.resource('s3', 
+		aws_access_key_id=pnsdp.ACCESS_ID,
+		aws_secret_access_key=pnsdp.ACCESS_KEY)
 	bucket = s3.Bucket('coreyschooltest')
 	object = bucket.Object(localfilename)
-	with open('./static/'+localfilename, 'wb') as f:
-		object.download_fileobj(f)
-	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], localfilename)
-	return full_filename
+	try:
+		with open('./static/'+localfilename, 'wb') as f:
+			object.download_fileobj(f)
+		full_filename = os.path.join(app.config['UPLOAD_FOLDER'], localfilename)
+		return full_filename
+	except botocore.exceptions.ClientError as e:
+		if e.response['Error']['Code'] == "404":
+			return ""
 	
+	return ""
 
 @app.route('/', methods=['GET','POST'])
 def index():
-	print(request.form)
 	if "userName" in request.form.keys():
 		#Create the form before loading the page
 		userName = request.form["userName"]
@@ -69,7 +75,9 @@ def index():
 			body = request.files['myfile']
 			print("Made it past file req")
 			nameFile = str(id) + '.jpg'
-			s3 = boto3.resource('s3')
+			s3 = boto3.resource('s3',
+				aws_access_key_id=pnsdp.ACCESS_ID,
+				aws_secret_access_key=pnsdp.ACCESS_KEY)
 			s3.Bucket('coreyschooltest').put_object(Key=nameFile, Body=body)
 	
 	sql = """SELECT * FROM threads WHERE threadId IS NOT NULL;"""
@@ -133,6 +141,7 @@ def thread():
 
 	#Download an image for the thread!
 	imagename = download(threadid)
+	
 	''' TESTING LOCALLY:
 	totList=[]
 	likes=1
